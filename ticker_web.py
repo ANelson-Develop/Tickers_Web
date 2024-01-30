@@ -2,8 +2,8 @@
 #   Author: Andrew Nelson
 #   Description: This program gets the market cap, revenue, PE ratio, PS ratio, and volatility for a list of tickers.
 #   Date Created: 21-JAN-2024
-#   Last Modified: 24-JAN-2024
-#   Revision: 4.1
+#   Last Modified: 30-JAN-2024
+#   Revision: 4.2
 
 #Import all the things
 import yfinance as yf
@@ -50,16 +50,31 @@ if st.button('Get Data'):
         stock = yf.Ticker(ticker)
         info = stock.info
 
+        ticker_url = f"https://finance.yahoo.com/quote/{ticker}/"
+
         # Get the market cap and format it as currency
-        market_cap = round(info.get("marketCap", 0) / 1_000_000)
+        market_cap = round(info.get("marketCap", 0) / 1_000_000,2)
+        
         if market_cap < 1000:  # If market cap is less than 1 billion
             market_cap = f"${format(market_cap, ',.2f')}M"  # Format as currency with commas and 2 decimal places
         else:
-            market_cap = f"${format(market_cap, ',')}M"  # Format as currency with commas
+            market_cap = f"${format(market_cap, ',.0f')}M"  # Format as currency with commas
 
         # Get the revenue and format it as currency
-        revenue = round(info.get("totalRevenue", 0) / 1_000_000)
-        revenue = f"${format(revenue, ',')}M"  # Format as currency with commas
+        revenue = round(info.get("totalRevenue", 0) / 1_000_000,2)
+
+        if revenue < 1000:  # If market cap is less than 1 billion
+            revenue = f"${format(revenue, ',.2f')}M"  # Format as currency with commas and 2 decimal places
+        else:
+            revenue = f"${format(revenue, ',.0f')}M"  # Format as currency with commas
+
+        # Get the EBITDA and format it as currency
+        ebitda = round(info.get("ebitda", 0) / 1_000_000,2)
+
+        if ebitda < 1000:  # If market cap is less than 1 billion
+            ebitda = f"${format(ebitda, ',.2f')}M"  # Format as currency with commas and 2 decimal places
+        else:
+           ebitda = f"${format(ebitda, ',.0f')}M"  # Format as currency with commas
 
         # Get the PE and PS ratios
         pe_ratio = "{:.2f}".format(info.get("trailingPE", 0))
@@ -81,10 +96,25 @@ if st.button('Get Data'):
         volatility = "{:.3f}".format(volatility)
 
         # Add the data to the list
-        data.append([ticker, market_cap, revenue, pe_ratio, ps_ratio, volatility])
-    
+        data.append([ticker, ticker_url, market_cap, revenue, ebitda, pe_ratio, ps_ratio, volatility])
+
     st.write("") # Print a blank line
 
-    # Print the data in a table
-    df = pd.DataFrame(data, columns=["Ticker", "Market Cap", "Revenue", "PE Ratio", "PS Ratio", "Volatility"])
-    st.table(df)
+    # Create a dataframe from the data
+    df = pd.DataFrame(data, columns=["Ticker","Ticker_Url","Market Cap", "Revenue", "EBITDA", "PE Ratio", "PS Ratio", "Volatility"])
+    
+    # Drop the 'Ticker' column
+    df = df.drop(columns=['Ticker'])
+
+    # Display the dataframe with clickable links
+    st.data_editor(
+        df,
+        column_config={
+            "Ticker_Url": st.column_config.LinkColumn(
+                "Links",
+                display_text="https://finance\.yahoo\.com/quote/(.*?)/" # Display the ticker as the link text
+            ),
+        },
+        hide_index=True,
+    )
+ 
