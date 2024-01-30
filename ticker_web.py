@@ -30,7 +30,7 @@ data = []
 key_counter = 0
 
 # Streamlit code to get user input
-tickers_input = st.text_input("Enter a ticker(s):", '', key=f'unique_{key_counter}')
+tickers_input = st.text_input("Enter ticker(s):", '', key=f'unique_{key_counter}')
 key_counter += 1
 
 # Where the magic happens
