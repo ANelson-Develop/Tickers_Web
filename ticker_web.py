@@ -1,9 +1,9 @@
 
 #   Author: Andrew Nelson
-#   Description: This program gets the market cap, revenue, PE ratio, PS ratio, and volatility for a list of tickers.
+#   Description: This program gets the market cap, revenue, revenue growth, PE ratio, PS ratio, and volatility for a list of tickers.
 #   Date Created: 21-JAN-2024
-#   Last Modified: 30-JAN-2024
-#   Revision: 4.2
+#   Last Modified: 13-FEB-2024
+#   Revision: 4.3
 
 #Import all the things
 import yfinance as yf
@@ -14,6 +14,8 @@ import sys
 import streamlit as st
 import logging
 from datetime import datetime, timedelta
+
+st.set_page_config(layout="wide")  # Set the page layout to wide
 
 # To helps suppress all unwanted outputs from yfinance
 logging.getLogger('yfinance').setLevel(logging.CRITICAL)
@@ -67,6 +69,9 @@ if st.button('Get Data'):
             revenue = f"${format(revenue, ',.2f')}M"  # Format as currency with commas and 2 decimal places
         else:
             revenue = f"${format(revenue, ',.0f')}M"  # Format as currency with commas
+        
+        #Get Revenue Growth
+        revenue_growth = info.get("revenueGrowth")
 
         # Get the EBITDA and format it as currency
         ebitda = round(info.get("ebitda", 0) / 1_000_000,2)
@@ -96,12 +101,12 @@ if st.button('Get Data'):
         volatility = "{:.3f}".format(volatility)
 
         # Add the data to the list
-        data.append([ticker, ticker_url, market_cap, revenue, ebitda, pe_ratio, ps_ratio, volatility])
+        data.append([ticker, ticker_url, market_cap, revenue,revenue_growth, ebitda, pe_ratio, ps_ratio, volatility])
 
     st.write("") # Print a blank line
 
     # Create a dataframe from the data
-    df = pd.DataFrame(data, columns=["Ticker","Ticker_Url","Market Cap", "Revenue", "EBITDA", "PE Ratio", "PS Ratio", "Volatility"])
+    df = pd.DataFrame(data, columns=["Ticker","Ticker_Url","Market Cap", "Revenue", "Revenue Growth","EBITDA", "PE Ratio", "PS Ratio", "Volatility"])
     
     # Drop the 'Ticker' column
     df = df.drop(columns=['Ticker'])
