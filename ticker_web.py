@@ -63,16 +63,18 @@ if st.button('Get Data'):
             market_cap = f"${format(market_cap, ',.0f')}M"  # Format as currency with commas
 
         # Get the revenue and format it as currency
-        revenue = round(info.get("totalRevenue", 0) / 1_000_000,2)
-
+        revenueNum = round(info.get("totalRevenue", 0) / 1_000_000,2)
+        revenue = "{revenueNum}%"
+        
         if revenue < 1000:  # If market cap is less than 1 billion
             revenue = f"${format(revenue, ',.2f')}M"  # Format as currency with commas and 2 decimal places
         else:
             revenue = f"${format(revenue, ',.0f')}M"  # Format as currency with commas
         
         #Get Revenue Growth
-        revenue_growth = info.get("revenueGrowth")
-
+        revenue_growth = info.get("revenueGrowth")*100
+        revenue_growth = 
+        
         # Get the EBITDA and format it as currency
         ebitda = round(info.get("ebitda", 0) / 1_000_000,2)
 
