@@ -3,7 +3,7 @@
 #   Description: This program gets the market cap, revenue, revenue growth, PE ratio, PS ratio, and volatility for a list of tickers.
 #   Date Created: 21-JAN-2024
 #   Last Modified: 13-FEB-2024
-#   Revision: 4.3
+#   Revision: 4.4
 
 #Import all the things
 import yfinance as yf
@@ -63,8 +63,7 @@ if st.button('Get Data'):
             market_cap = f"${format(market_cap, ',.0f')}M"  # Format as currency with commas
 
         # Get the revenue and format it as currency
-        revenueNum = round(info.get("totalRevenue", 0) / 1_000_000,2)
-        revenue = "{revenueNum}%"
+        revenue = round(info.get("totalRevenue", 0) / 1_000_000,2)
         
         if revenue < 1000:  # If market cap is less than 1 billion
             revenue = f"${format(revenue, ',.2f')}M"  # Format as currency with commas and 2 decimal places
@@ -72,8 +71,8 @@ if st.button('Get Data'):
             revenue = f"${format(revenue, ',.0f')}M"  # Format as currency with commas
         
         #Get Revenue Growth
-        revenue_growth = info.get("revenueGrowth")*100
-        revenue_growth = 
+        revenue_growthNum = info.get("revenueGrowth")*100
+        revenue_growth = "{revenue_growthNum}%"
         
         # Get the EBITDA and format it as currency
         ebitda = round(info.get("ebitda", 0) / 1_000_000,2)
