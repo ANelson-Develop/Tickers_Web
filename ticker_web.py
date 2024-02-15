@@ -2,8 +2,8 @@
 #   Author: Andrew Nelson
 #   Description: This program gets the market cap, revenue, revenue growth, PE ratio, PS ratio, and volatility for a list of tickers.
 #   Date Created: 21-JAN-2024
-#   Last Modified: 13-FEB-2024
-#   Revision: 4.5
+#   Last Modified: 15-FEB-2024
+#   Revision: 4.6
 
 #Import all the things
 import yfinance as yf
@@ -71,8 +71,7 @@ if st.button('Get Data'):
             revenue = f"${format(revenue, ',.0f')}M"  # Format as currency with commas
         
         #Get Revenue Growth
-        revenue_growthNum = info.get("revenueGrowth")*100
-        revenue_growth = f"{revenue_growthNum}%"
+        revenue_growth = info.get("revenueGrowth")*100
         
         # Get the EBITDA and format it as currency
         ebitda = round(info.get("ebitda", 0) / 1_000_000,2)
@@ -107,7 +106,7 @@ if st.button('Get Data'):
     st.write("") # Print a blank line
 
     # Create a dataframe from the data
-    df = pd.DataFrame(data, columns=["Ticker","Ticker_Url","Market Cap", "Revenue", "Revenue Growth","EBITDA", "PE Ratio", "PS Ratio", "Volatility"])
+    df = pd.DataFrame(data, columns=["Ticker","Ticker_Url","Market Cap", "Revenue", "Revenue Growth (%)","EBITDA", "PE Ratio", "PS Ratio", "Volatility"])
     
     # Drop the 'Ticker' column
     df = df.drop(columns=['Ticker'])
