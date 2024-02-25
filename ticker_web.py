@@ -2,8 +2,8 @@
 #   Author: Andrew Nelson
 #   Description: This program gets the market cap, revenue, revenue growth, PE ratio, PS ratio, and volatility for a list of tickers.
 #   Date Created: 21-JAN-2024
-#   Last Modified: 15-FEB-2024
-#   Revision: 4.6
+#   Last Modified: 25-FEB-2024
+#   Revision: 4.7
 
 #Import all the things
 import yfinance as yf
@@ -57,33 +57,19 @@ if st.button('Get Data'):
         # Get the market cap and format it as currency
         market_cap = round(info.get("marketCap", 0) / 1_000_000,2)
         
-        if market_cap < 1000:  # If market cap is less than 1 billion
-            market_cap = f"${format(market_cap, ',.2f')}M"  # Format as currency with commas and 2 decimal places
-        else:
-            market_cap = f"${format(market_cap, ',.0f')}M"  # Format as currency with commas
-
+        
         # Get the revenue and format it as currency
         revenue = round(info.get("totalRevenue", 0) / 1_000_000,2)
-        
-        if revenue < 1000:  # If market cap is less than 1 billion
-            revenue = f"${format(revenue, ',.2f')}M"  # Format as currency with commas and 2 decimal places
-        else:
-            revenue = f"${format(revenue, ',.0f')}M"  # Format as currency with commas
-        
+               
         #Get Revenue Growth
         revenue_growth = info.get("revenueGrowth")*100
         
         # Get the EBITDA and format it as currency
         ebitda = round(info.get("ebitda", 0) / 1_000_000,2)
 
-        if ebitda < 1000:  # If market cap is less than 1 billion
-            ebitda = f"${format(ebitda, ',.2f')}M"  # Format as currency with commas and 2 decimal places
-        else:
-           ebitda = f"${format(ebitda, ',.0f')}M"  # Format as currency with commas
-
         # Get the PE and PS ratios
-        pe_ratio = "{:.2f}".format(info.get("trailingPE", 0))
-        ps_ratio = "{:.2f}".format(info.get("priceToSalesTrailing12Months", 0))
+        pe_ratio = info.get("trailingPE", 0)
+        ps_ratio = info.get("priceToSalesTrailing12Months", 0)
 
         # Suppress all output from yfinance when getting 1 year of data
         stderr = sys.stderr
@@ -101,25 +87,35 @@ if st.button('Get Data'):
         volatility = "{:.3f}".format(volatility)
 
         # Add the data to the list
-        data.append([ticker, ticker_url, market_cap, revenue,revenue_growth, ebitda, pe_ratio, ps_ratio, volatility])
+        data.append([ticker, market_cap, revenue, ebitda, pe_ratio, ps_ratio, volatility, revenue_growth,ticker_url])
 
     st.write("") # Print a blank line
 
     # Create a dataframe from the data
-    df = pd.DataFrame(data, columns=["Ticker","Ticker_Url","Market Cap", "Revenue", "Revenue Growth (%)","EBITDA", "PE Ratio", "PS Ratio", "Volatility"])
+    df = pd.DataFrame(data, columns=["Ticker","Market Cap", "Revenue","EBITDA", "PE Ratio", "PS Ratio", "Volatility", "YoY Growth","Link"])
     
-    # Drop the 'Ticker' column
-    df = df.drop(columns=['Ticker'])
+
+
+    # Format the dataframe 
+    df_styled = df.style.format({
+    'Market Cap': '${0:,.0f}M',
+    'Revenue': '${0:,.0f}M',
+    'EBITDA': '${0:,.0f}M',
+    'PE Ratio': '{0:,.2f}',
+    'PS Ratio': '{0:,.2f}',
+    'YoY Growth': '{0:,.1f}%'
+    })
 
     # Display the dataframe with clickable links
-    st.data_editor(
-        df,
+    st.dataframe(
+        df_styled,
         column_config={
-            "Ticker_Url": st.column_config.LinkColumn(
-                "Links",
+            "Link": st.column_config.LinkColumn(
+                "Link",
                 display_text="https://finance\.yahoo\.com/quote/(.*?)/" # Display the ticker as the link text
             ),
         },
         hide_index=True,
     )
- 
+
+
