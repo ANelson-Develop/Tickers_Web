@@ -2,8 +2,8 @@
 #   Author: Andrew Nelson
 #   Description: This program gets the market cap, revenue, revenue growth, PE ratio, PS ratio, and volatility for a list of tickers.
 #   Date Created: 21-JAN-2024
-#   Last Modified: 25-FEB-2024
-#   Revision: 4.7
+#   Last Modified: 17-OCT-2024
+#   Revision: 4.8
 
 #Import all the things
 import yfinance as yf
@@ -85,14 +85,17 @@ if st.button('Get Data'):
         # Calculate the annualized volatility
         volatility = tickerDf['Return'].std() * np.sqrt(252)  # There are typically 252 trading days in a year
         volatility = "{:.3f}".format(volatility)
+        
+        #Get Current Volume
+        current_volume = info.get("Volume")
 
         # Add the data to the list
-        data.append([ticker, market_cap, revenue, ebitda, pe_ratio, ps_ratio, volatility, revenue_growth,ticker_url])
+        data.append([ticker, market_cap, revenue, ebitda, pe_ratio, ps_ratio, volatility, revenue_growth,current_volume,ticker_url])
 
     st.write("") # Print a blank line
 
     # Create a dataframe from the data
-    df = pd.DataFrame(data, columns=["Ticker","Market Cap", "Revenue","EBITDA", "PE Ratio", "PS Ratio", "Volatility", "YoY Growth","Link"])
+    df = pd.DataFrame(data, columns=["Ticker","Market Cap", "Revenue","EBITDA", "PE Ratio", "PS Ratio", "Volatility", "YoY Growth","Volume","Link"])
     
 
 
@@ -103,7 +106,8 @@ if st.button('Get Data'):
     'EBITDA': '${0:,.0f}M',
     'PE Ratio': '{0:,.2f}',
     'PS Ratio': '{0:,.2f}',
-    'YoY Growth': '{0:,.1f}%'
+    'YoY Growth': '{0:,.1f}%',
+    'Market Cap': '{0:,.0f}',
     })
 
     # Display the dataframe with clickable links
