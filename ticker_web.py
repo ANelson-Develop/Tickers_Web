@@ -3,7 +3,7 @@
 #   Description: This program gets the market cap, revenue, revenue growth, PE ratio, PS ratio, and volatility for a list of tickers.
 #   Date Created: 21-JAN-2024
 #   Last Modified: 17-OCT-2024
-#   Revision: 4.8
+#   Revision: 4.9
 
 #Import all the things
 import yfinance as yf
@@ -87,15 +87,15 @@ if st.button('Get Data'):
         volatility = "{:.3f}".format(volatility)
         
         #Get Current Volume
-        current_volume = info.get("Volume")
+        average_volume = info.get('averageDailyVolume10Day')
 
         # Add the data to the list
-        data.append([ticker, market_cap, revenue, ebitda, pe_ratio, ps_ratio, volatility, revenue_growth,current_volume,ticker_url])
+        data.append([ticker, market_cap, revenue, ebitda, pe_ratio, ps_ratio, volatility, revenue_growth,average_volume,ticker_url])
 
     st.write("") # Print a blank line
 
     # Create a dataframe from the data
-    df = pd.DataFrame(data, columns=["Ticker","Market Cap", "Revenue","EBITDA", "PE Ratio", "PS Ratio", "Volatility", "YoY Growth","Volume","Link"])
+    df = pd.DataFrame(data, columns=["Ticker","Market Cap", "Revenue","EBITDA", "PE Ratio", "PS Ratio", "Volatility", "YoY Growth","Avg Volume","Link"])
     
 
 
@@ -107,7 +107,7 @@ if st.button('Get Data'):
     'PE Ratio': '{0:,.2f}',
     'PS Ratio': '{0:,.2f}',
     'YoY Growth': '{0:,.1f}%',
-    'Market Cap': '{0:,.0f}',
+    'Avg Volume': '{0:,.0f}',
     })
 
     # Display the dataframe with clickable links
